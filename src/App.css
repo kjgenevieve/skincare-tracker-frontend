@@ -1,0 +1,14 @@
+body {
+  background-image: linear-gradient(to right, #ffecd2 0%, #fcb69f 100%);
+}
+
+.ui.menu {
+  background-color: #7C8C6E;
+}
+
+.pageTitle {
+  margin-top: 2em;
+  margin-bottom: 2em;
+  margin-left: 2em;
+  margin-right: 2em;
+}
