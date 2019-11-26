@@ -1,5 +1,6 @@
 # Dermary
-A skincare tracker that enables users to find correlations between skin health and their products.
+A skincare tracker that enables users to find correlations between skin health and their products. </br>
+The backend repo lives [here](https://github.com/kjgenevieve/skincare-tracker-backend).
 
 ## Motivation
 As an acne-prone logic enthusiast, I was able to cure the majority of my skin problems through a spreadsheet. </br>
