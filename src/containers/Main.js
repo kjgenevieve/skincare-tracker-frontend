@@ -43,68 +43,70 @@ export default class Main extends Component {
   }
 
   renderAddToShelf = () => {
-    if (this.state.usersProductReviews.length === 0 && this.state.allProducts.length === 0) {
-      // I don't have state set.
-      // Get allProducts && usersProductReviews, set to state, render <AddToShelf /> with props.
-      const user_id = 1;
-      const urls = [
-        "http://localhost:3000/products",
-        `http://localhost:3000/user_products/users/${user_id}`
-      ];
+    if (this.state.usersProductReviews) {
+      if (this.state.usersProductReviews.length === 0 && this.state.allProducts.length === 0) {
+        // I don't have state set.
+        // Get allProducts && usersProductReviews, set to state, render <AddToShelf /> with props.
+        const user_id = 1;
+        const urls = [
+          "http://localhost:3000/productsearch?recent=true",
+          `http://localhost:3000/user_products/users/${user_id}`
+        ];
 
-      Promise.all(
-        urls.map(url =>
-          fetch(url)
-            .then(resp => resp.json())
-            .catch(error => console.log("There was a problem!", error))
-        )
-      ).then(data => {
-        this.setState({
-          allProducts: data[0],
-          usersProductReviews: data[1]
+        Promise.all(
+          urls.map(url =>
+            fetch(url)
+              .then(resp => resp.json())
+              .catch(error => console.log("There was a problem!", error))
+          )
+        ).then(data => {
+          this.setState({
+            allProducts: data[0],
+            usersProductReviews: data[1]
+          })
+        }).then(() => {
+          return (
+            <AddToShelf products={this.state.allProducts} usersProductReviews={this.state.usersProductReviews} />
+          )
         })
-      }).then(() => {
+      } else if (this.state.usersProductReviews.length === 0 && this.state.allProducts.length !== 0) {
+        // I already have state.allProducts. (This is an edge case that should not occur.) It's possible that this part of the program is broken, because I have no way to test it.
+        // Get usersProductReviews, set to state, render <AddToShelf /> with props.
+        console.log("Error: Main.js, renderAddToShelf(), 'else if' statement.")
+        const user_id = 1;
+
+        fetch(`http://localhost:3000/user_products/users/${user_id}`)
+        .then(res => res.json())
+        .then(data => {
+          this.setState({
+            usersProductReviews: data
+          })
+        })
+        .then(() =>
+          {return (
+            <AddToShelf products={this.state.allProducts} usersProductReviews={this.state.usersProductReviews} />
+          )})
+      } else if (this.state.usersProductReviews.length !== 0 && this.state.allProducts.length === 0) {
+        // I already have state.usersProductReviews.
+        // Get allProducts, set to state, render <AddToShelf /> with props.
+        fetch(`http://localhost:3000/products`)
+        .then(res => res.json())
+        .then(data => {
+          this.setState({
+            allProducts: data
+          })
+        })
+        .then(() =>
+          {return (
+            <AddToShelf products={this.state.allProducts} usersProductReviews={this.state.usersProductReviews} />
+          )})
+      } else {
+        // I have access to both state.usersProductReviews && state.allProducts.
+        // Render <AddToShelf /> with props.
         return (
           <AddToShelf products={this.state.allProducts} usersProductReviews={this.state.usersProductReviews} />
         )
-      })
-    } else if (this.state.usersProductReviews.length === 0 && this.state.allProducts.length !== 0) {
-      // I already have state.allProducts. (This is an edge case that should not occur.) It's possible that this part of the program is broken, because I have no way to test it.
-      // Get usersProductReviews, set to state, render <AddToShelf /> with props.
-      console.log("Error: Main.js, renderAddToShelf(), 'else if' statement.")
-      const user_id = 1;
-
-      fetch(`http://localhost:3000/user_products/users/${user_id}`)
-      .then(res => res.json())
-      .then(data => {
-        this.setState({
-          usersProductReviews: data
-        })
-      })
-      .then(() =>
-        {return (
-          <AddToShelf products={this.state.allProducts} usersProductReviews={this.state.usersProductReviews} />
-        )})
-    } else if (this.state.usersProductReviews.length !== 0 && this.state.allProducts.length === 0) {
-      // I already have state.usersProductReviews.
-      // Get allProducts, set to state, render <AddToShelf /> with props.
-      fetch(`http://localhost:3000/products`)
-      .then(res => res.json())
-      .then(data => {
-        this.setState({
-          allProducts: data
-        })
-      })
-      .then(() =>
-        {return (
-          <AddToShelf products={this.state.allProducts} usersProductReviews={this.state.usersProductReviews} />
-        )})
-    } else {
-      // I have access to both state.usersProductReviews && state.allProducts.
-      // Render <AddToShelf /> with props.
-      return (
-        <AddToShelf products={this.state.allProducts} usersProductReviews={this.state.usersProductReviews} />
-      )
+      }
     }
   }
 

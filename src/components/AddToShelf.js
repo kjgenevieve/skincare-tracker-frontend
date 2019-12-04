@@ -1,12 +1,28 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import { Button } from 'semantic-ui-react';
+import { Button, Form, Input } from 'semantic-ui-react';
 import PageTitle from './PageTitle';
 import ReactTable from 'react-table';
 import 'react-table/react-table.css';
 
 export default class AddToShelf extends Component {
-    formatData = (products, usersProductReviews) => {
+  state = {
+    productData: []
+  }
+
+  handleChange = (e, d) => {
+    this.setState({ [d.name]: d.value })
+  }
+
+  handleSubmit = () => {
+    fetch(`http://localhost:3000/productsearch?search=${this.state.userInput}`)
+      .then(res => res.json())
+      .then(data => {
+        this.formatData(data, this.props.usersProductReviews)
+      })        
+  }
+  
+  formatData = (products, usersProductReviews) => {
       let productData = []
       let usersProductIds = []
       if (products && usersProductReviews) {
@@ -42,7 +58,10 @@ export default class AddToShelf extends Component {
       } else {
           console.log("Data not being received (ProductTable.js)")
       }
-      return productData
+      // return productData
+      this.setState({
+        productData: productData
+      }, () => console.log(this.state.productData.length))
     }
     
       filterCaseInsensitive = (filter, row) => {
@@ -54,8 +73,8 @@ export default class AddToShelf extends Component {
               // console.log(content)
               return String(content.props.children).toLowerCase().includes(filter.value.toLowerCase());
             } else {
-              console.log("content", content)
-                return String(content).toLowerCase().includes(filter.value.toLowerCase());
+              // console.log("content", content)
+              return String(content).toLowerCase().includes(filter.value.toLowerCase());
             }
         }
       }
@@ -77,7 +96,58 @@ export default class AddToShelf extends Component {
       }, {
         Header: 'Category',
         accessor: 'category',
-        width: 100
+        width: 100,
+        filterMethod: (filter, row) => {
+          if (filter.value === "all") {
+            return true;
+          }
+          if (filter.value === "cleanser") {
+            return row[filter.id] === "Cleanser";
+          }
+          if (filter.value === "eye care") {
+            return row[filter.id] === "Eye Care";
+          }
+          if (filter.value === "lip care") {
+            return row[filter.id] === "Lip Care";
+          }
+          if (filter.value === "mask") {
+            return row[filter.id] === "Mask";
+          }
+          if (filter.value === "moisturizer") {
+            return row[filter.id] === "Moisturizer";
+          }
+          if (filter.value === "mist") {
+            return row[filter.id] === "Mist";
+          }
+          if (filter.value === "sunscreen") {
+            return row[filter.id] === "Sunscreen";
+          }
+          if (filter.value === "toner") {
+            return row[filter.id] === "Toner";
+          }
+          if (filter.value === "treatment") {
+            return row[filter.id] === "Treatment";
+          }
+          return row[filter.id] === "Misc";
+        },
+        Filter: ({ filter, onChange }) =>
+          <select
+            onChange={event => onChange(event.target.value)}
+            style={{ width: "100%" }}
+            value={filter ? filter.value : "all"}
+          >
+            <option value="all">All</option>
+            <option value="cleanser">Cleansers</option>
+            <option value="eye care">Eye Care</option>
+            <option value="lip care">Lip Care</option>
+            <option value="mask">Masks</option>
+            <option value="moisturizer">Moisturizers</option>
+            <option value="mist">Mists</option>
+            <option value="sunscreen">Sunscreens</option>
+            <option value="toner">Toners</option>
+            <option value="treatment">Treatments</option>
+            <option value="misc">Other</option>
+          </select>
       }, {
         Header: 'Sunscreen',
         columns: [{
@@ -99,11 +169,22 @@ export default class AddToShelf extends Component {
     return (
       <div>
             <PageTitle location="addtoshelf" />
+            <Form onSubmit={this.handleSubmit}>
+              <Form.Field
+                control={Input}
+                label="Search by Brand or Product"
+                name="userInput"
+                placeholder=""
+                onChange={this.handleChange}
+              />
+              <Form.Button>Search</Form.Button>
+            </Form>
+            
             <ReactTable
-                data={this.formatData(this.props.products, this.props.usersProductReviews)}
+                data={this.state.productData}
                 columns={columns}
-                defaultPageSize={20}
-                noDataText="Loading..."
+                defaultPageSize={25}
+                noDataText="Search for a product to see results."
                 style={{
                     height: "600px" // This will force the table body to overflow and scroll, since there is not enough room
                 }}
