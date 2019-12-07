@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom';
 import PageTitle from './PageTitle';
 import ReactTable from 'react-table';
 import 'react-table/react-table.css';
-import checkmark from '../assets/checkmark.svg'
+import checkmark from '../assets/checkmark.svg';
+import placeholderImage from '../assets/product_image_placeholder.svg';
 
 export default class ProductTable extends Component {
   formatData = (usersProductReviews) => {
@@ -41,6 +42,10 @@ export default class ProductTable extends Component {
           review.caused_acne = review.caused_acne
         }
 
+        if (product.img_url === "/Users/genevieve/Development/mod_5/skincare-tracker/frontend/src/assets/product_image_placeholder.svg") {
+          product.img_url = placeholderImage
+        }
+        
         return productData = [...productData,
           {
             "id": product.id,

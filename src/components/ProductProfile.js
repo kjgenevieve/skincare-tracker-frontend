@@ -6,6 +6,7 @@ import ProductIngredients from './ProductIngredients';
 import ReactTable from 'react-table';
 import 'react-table/react-table.css';
 import checkmark from '../assets/checkmark.svg'
+
 export default class ProductProfile extends Component {
     constructor() {
         super();

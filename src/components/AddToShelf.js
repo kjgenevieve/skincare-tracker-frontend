@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import { Button, Form, Input } from 'semantic-ui-react';
+import { Button, Dropdown, Form, Input } from 'semantic-ui-react';
 import PageTitle from './PageTitle';
 import ReactTable from 'react-table';
 import 'react-table/react-table.css';
+import placeholderImage from '../assets/product_image_placeholder.svg';
 
 export default class AddToShelf extends Component {
   state = {
@@ -11,11 +12,30 @@ export default class AddToShelf extends Component {
   }
 
   handleChange = (e, d) => {
-    this.setState({ [d.name]: d.value })
+    this.setState({ userInput: d.value })
+  }
+
+  handleCategoryDropdown = (e, d) => {
+    this.setState({ categories: d.value })
+  }
+
+  handleClearSearch = (e, d) => {
+    this.setState({
+      userInput: "",
+      categories: []
+    })
   }
 
   handleSubmit = () => {
-    fetch(`http://localhost:3000/productsearch?search=${this.state.userInput}`)
+    let categoryQuery = ""
+    
+    if (this.state.categories) {
+      categoryQuery = "&category=" + this.state.categories.join("+")
+    }
+    
+    let url = `http://localhost:3000/productsearch?search=${this.state.userInput}${categoryQuery}`
+
+    fetch(url)
       .then(res => res.json())
       .then(data => {
         this.formatData(data, this.props.usersProductReviews)
@@ -35,6 +55,9 @@ export default class AddToShelf extends Component {
         if (usersProductIds.includes(product.id)) {
           // This line can be removed if there's a reasonable ".excludes()" method.
         } else {
+          if (product.img_url === "/Users/genevieve/Development/mod_5/skincare-tracker/frontend/src/assets/product_image_placeholder.svg") {
+            product.img_url = placeholderImage
+          }
           return productData = [...productData,
             {
               "id": product.id,
@@ -164,6 +187,21 @@ export default class AddToShelf extends Component {
       }
     ]
   
+    // const { value } = this.state
+
+    const categoryOptions = [
+      { key: 'Cleanser', text: 'Cleanser', value: 'Cleanser' },
+      { key: 'Eye', text: 'Eye Care', value: 'Eye' },
+      { key: 'Lip', text: 'Lip Care', value: 'Lip' },
+      { key: 'Mask', text: 'Mask', value: 'Mask' },
+      { key: 'Moisturizer', text: 'Moisturizer', value: 'Moisturizer' },
+      { key: 'Mist', text: 'Mist', value: 'Mist' },
+      { key: 'Sunscreen', text: 'Sunscreen', value: 'Sunscreen' },
+      { key: 'Toner', text: 'Toner', value: 'Toner' },
+      { key: 'Treatment', text: 'Treatment', value: 'Treatment' },
+      { key: 'Misc', text: 'Other', value: 'Misc' },
+    ]
+
     return (
       <div>
         <PageTitle location="addtoshelf" />
@@ -172,10 +210,30 @@ export default class AddToShelf extends Component {
             control={Input}
             label="Search by Brand or Product"
             name="userInput"
+            value={this.state.userInput}
             placeholder=""
             onChange={this.handleChange}
           />
-          <Form.Button>Search</Form.Button>
+          <Form.Group>
+            <label>Filter by Category</label>
+              <Dropdown
+                placeholder='Category'
+                name="categoryFilters"
+                fluid
+                search
+                multiple
+                selection
+                value={this.state.categories}
+                options={categoryOptions}
+                onChange={this.handleCategoryDropdown}
+              />
+          </Form.Group>
+          <Form.Button>Submit</Form.Button>
+          <Form.Button
+            onClick={this.handleClearSearch}
+          >
+            Clear Search
+          </Form.Button>
         </Form>
         
         <ReactTable

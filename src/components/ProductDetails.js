@@ -1,10 +1,14 @@
 import React, { Component } from 'react';
 import 'react-table/react-table.css';
+import placeholderImage from '../assets/product_image_placeholder.svg';
 
 export default class ProductDetails extends Component {
   
     render() {
         let product = this.props.product
+        if (product.img_url === "/Users/genevieve/Development/mod_5/skincare-tracker/frontend/src/assets/product_image_placeholder.svg") {
+            product.img_url = placeholderImage
+          }
         return (
         <div>
                 <div>
