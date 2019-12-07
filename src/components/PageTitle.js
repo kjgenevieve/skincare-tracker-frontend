@@ -4,6 +4,7 @@ import homeIcon from '../assets/user_profile.png';
 import productsIcon from '../assets/products.svg';
 import ingredientsIcon from '../assets/ingredients.svg';
 import ingredientProfileIcon from '../assets/ingredient_profile.svg';
+import placeholderImage from '../assets/product_image_placeholder.svg';
 
 
 export default class PageTitle extends Component {
@@ -25,7 +26,11 @@ export default class PageTitle extends Component {
                 greeting = "Products";
             } else if (location === "product profile") {
                 // console.log(location)
-                icon = this.props.productImage;
+                if (this.props.productImage === "/Users/genevieve/Development/mod_5/skincare-tracker/frontend/src/assets/product_image_placeholder.svg") {
+                    icon = placeholderImage
+                } else {
+                    icon = this.props.productImage;    
+                }
                 greeting = this.props.productBrand + " | " + this.props.productName;
             } else if (location === "addtoshelf") {
                 // console.log(location)
