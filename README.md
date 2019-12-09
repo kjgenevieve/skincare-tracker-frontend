@@ -15,7 +15,7 @@ Coming soon! </br>
 Built with:
 * Rails
 * React
-* npm react-table
+* [React-Table](https://www.npmjs.com/package/react-table)
 
 ## Installation
 * Clone the repo
